@@ -8,9 +8,9 @@ _displaycontrol = 0
 _row_offsets = [None]*4
 
 class LCD:
-    """Copied from https://github.com/kurimawxx00/LiquidCrystalPi/blob/master/LiquidCrystalPi.py"""
-        import RPi.GPIO as GPIO
-        import time as time
+	"""Copied from https://github.com/kurimawxx00/LiquidCrystalPi/blob/master/LiquidCrystalPi.py"""
+	import RPi.GPIO as GPIO
+	import time as time
 
 	def __init__(self, rs, enable, d0, d1, d2, d3):
 		global _rs_pin, _enable_pin, _data_pins
