@@ -1,6 +1,6 @@
 import os
 import time
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 from traintime import TrainTimeTable
 from lcd import LCD
