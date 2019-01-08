@@ -40,20 +40,19 @@ class TrainTimeTable():
 
     def fetch_formated_next_departures(self):
         lines = self._get_next_train_list()
-        first_col_max_len = 0
+        first_col_max_len = 3
         last_col_max_len = 0
         max_line_size = 16
         unit_size = 3
+
         for line in lines:
-            if len(line[0]) > first_col_max_len:
-                first_col_max_len = len(line[0])
             if len(line[2]) + unit_size > last_col_max_len:
                 last_col_max_len = len(line[2])
         middle_col_size = max_line_size - (last_col_max_len + first_col_max_len + unit_size + (len(line) - 1))
         text = ""
         for line in lines:
-            text += align_text(line[0], first_col_max_len) + " "
+            text += align_text(line[0][:first_col_max_len], first_col_max_len) + " "
             text += align_text(line[1][:middle_col_size], middle_col_size) + " "
-            text += align_text(line[2], last_col_max_len) + "min"
+            text += align_text(line[2][:last_col_max_len], last_col_max_len) + "min"
             text += "\n"
         return text
