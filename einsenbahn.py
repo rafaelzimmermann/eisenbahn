@@ -3,19 +3,19 @@ import time
 # import RPi.GPIO as GPIO
 
 from traintime import TrainTimeTable
-# from lcd import LCD
+from lcd import LCD
 
 UPDATE_INTERVAL = 60
 last_update = None
 text = ""
 
-# GPIO.setmode(GPIO.BOARD)
-# GPIO.setwarnings(False)
-#
-# lcd = LCD(29, 31, 33, 36, 37, 38)
-#
-# LCD.begin(16,2)
-# time.sleep(0.5)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setwarnings(False)
+
+lcd = LCD(8, 10, 12, 16, 18, 22)
+
+lcd.begin(16,2)
+time.sleep(0.5)
 
 train_time_table = TrainTimeTable("config.json")
 
@@ -36,17 +36,14 @@ display_line_size = 2
 while True:
     update_traintime()
     lines = text.split("\n")
-    if len(lines) >= display_line_size - 1:
-        for i in range(1, len(lines) - 1):
-            os.system('clear')
-            print(lines[i - 1])
-            print(lines[i])
-            # lcd.write(lines[i - 1])
-            # lcd.write(lines[i])
-            time.sleep(UPDATE_INTERVAL / (len(lines) * 2))
-    else:
+    for i in range(0, len(lines) - 1):
         os.system('clear')
-        for i in range(0, len(lines) - 1):
-            print(lines[i])
-            # lcd.write(lines[i])
-            time.sleep(UPDATE_INTERVAL)
+        print(lines[i])
+        lcd.clear()
+        lcd.home()
+        lcd.write(lines[i])
+        if len(lines) > i:
+            print(lines[i + 1])
+            lcd.nextline()
+            lcd.write(lines[i + 1])
+            time.sleep(UPDATE_INTERVAL / (len(lines) * 2))
