@@ -1,14 +1,13 @@
 {
-  "table[departure][stationId]": "20018235"
-  "table[departure][stationName]": "Düsseldorf+Hbf"
-  "table[departure][platformVisibility]": "1"
-  "table[departure][transport]": "0,1,2,3,4,15,6"
-  "table[departure][useAllLines]": "1"
-  table[departure][linesFilter]
-  "table[departure][optimizedForStation]": "0"
-  "table[departure][rowCount]": "6"
-  "table[departure][refreshInterval]": "60"
-  "table[departure][distance]": "0"
-  "table[departure][marquee]": "0"
+  "table[departure][stationId]": "20018235",
+  "table[departure][stationName]": "Düsseldorf+Hbf",
+  "table[departure][platformVisibility]": "1",
+  "table[departure][transport]": "0,1,2,3,4,15,6",
+  "table[departure][useAllLines]": "1",
+  "table[departure][optimizedForStation]": "0",
+  "table[departure][rowCount]": "6",
+  "table[departure][refreshInterval]": "60",
+  "table[departure][distance]": "0",
+  "table[departure][marquee]": "0",
   "table[sortBy]": "1"
 }
