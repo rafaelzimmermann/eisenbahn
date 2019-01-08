@@ -7,3 +7,6 @@ Show Düsseldorf train time table for selected station on 16x2 LCD display.
   $ cp config.json.example config.json
   $ python eisenbahn.py
 ```
+
+## Related project
+https://github.com/kurimawxx00/LiquidCrystalPi
