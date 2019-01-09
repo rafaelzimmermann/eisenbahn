@@ -24,7 +24,7 @@ class TrainTimeTable():
             raise TrainTableRequestError()
 
         if response.status_code != 200:
-            raise TrainTableRequestError()
+            raise TrainTableRequestError("Request Status Code:" + str(response.status_code))
         return response.json()["departureData"]
 
     def _get_next_train_list(self):
@@ -38,11 +38,10 @@ class TrainTimeTable():
             lines.append(line)
         return lines
 
-    def fetch_formated_next_departures(self):
+    def fetch_formated_next_departures(self, max_line_size=16):
         lines = self._get_next_train_list()
         first_col_max_len = 3
         last_col_max_len = 0
-        max_line_size = 16
         unit_size = 3
 
         for line in lines:
@@ -56,3 +55,9 @@ class TrainTimeTable():
             text += align_text(line[2][:last_col_max_len], last_col_max_len) + "min"
             text += "\n"
         return text
+
+if __name__ == '__main__':
+    import sys
+    config_file = sys.argv[1] if len(sys.argv) == 2 else "config.json"
+    train_time_table = TrainTimeTable(config_file)
+    print(train_time_table.fetch_formated_next_departures(max_line_size=30))
