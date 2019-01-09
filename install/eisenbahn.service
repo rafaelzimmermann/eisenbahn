@@ -1,7 +1,8 @@
 [Service]
 ExecStart=/usr/local/bin/python /opt/eisenbahn/eisenbahn.py
-StandardOutput=/var/log/eisenbahn.log
-StandardError=/var/log/eisenbahn-error.log
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=eisenbahn
 Restart=always
 SyslogIdentifier=eisenbahn
 User=pi
