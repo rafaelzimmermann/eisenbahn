@@ -1,5 +1,6 @@
 [Service]
-ExecStart=/usr/bin/python /opt/eisenbahn/eisenbahn.py
+ExecStart=/usr/bin/python eisenbahn.py
+WorkingDirectory=/opt/eisenbahn
 StandardOutput=syslog
 StandardError=syslog
 Restart=always
