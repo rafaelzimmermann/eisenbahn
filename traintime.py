@@ -32,32 +32,34 @@ class TrainTimeTable():
         lines = []
         for item in departures:
             line = []
-            line.append(item["lineNumber"])
-            line.append(item["direction"])
-            line.append(str(item["countdown"]))
-            lines.append(line)
+            if item["countdown"] < 60:
+                line.append(item["lineNumber"])
+                line.append(item["direction"])
+                line.append(str(item["countdown"]) if item["countdown"] > 0 else "sofort")
+                lines.append(line)
         return lines
 
     def fetch_formated_next_departures(self, max_line_size=16):
         lines = self._get_next_train_list()
         first_col_max_len = 3
-        last_col_max_len = 0
+        last_col_max_len = 2
         unit_size = 3
-
-        for line in lines:
-            if len(line[2]) + unit_size > last_col_max_len:
-                last_col_max_len = len(line[2])
-        middle_col_size = max_line_size - (last_col_max_len + first_col_max_len + unit_size + (len(line) - 1))
+        middle_col_size = max_line_size - (last_col_max_len + first_col_max_len + unit_size + 2)
         text = ""
         for line in lines:
             text += align_text(line[0][:first_col_max_len], first_col_max_len) + " "
             text += align_text(line[1][:middle_col_size], middle_col_size) + " "
-            text += align_text(line[2][:last_col_max_len], last_col_max_len) + "min"
+            if line[2] == "sofort":
+                text += line[2]
+            else:
+                text += align_text(line[2][:last_col_max_len], last_col_max_len) + "min"
             text += "\n"
         return text
+
 
 if __name__ == '__main__':
     import sys
     config_file = sys.argv[1] if len(sys.argv) == 2 else "config.json"
+    print(config_file)
     train_time_table = TrainTimeTable(config_file)
-    print(train_time_table.fetch_formated_next_departures(max_line_size=30))
+    print(train_time_table.fetch_formated_next_departures(max_line_size=30).encode('utf-8'))
