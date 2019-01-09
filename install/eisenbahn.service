@@ -1,0 +1,11 @@
+[Service]
+ExecStart=python /opt/eisenbahn/eisenbahn.py
+StandardOutput=/var/log/eisenbahn.log
+StandardError=/var/log/eisenbahn-error.log
+Restart=always
+SyslogIdentifier=eisenbahn
+User=pi
+Group=pi
+
+[Install]
+WantedBy=multi-user.target
