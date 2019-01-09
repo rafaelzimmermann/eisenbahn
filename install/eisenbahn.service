@@ -2,7 +2,6 @@
 ExecStart=/usr/local/bin/python /opt/eisenbahn/eisenbahn.py
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=eisenbahn
 Restart=always
 SyslogIdentifier=eisenbahn
 User=pi
