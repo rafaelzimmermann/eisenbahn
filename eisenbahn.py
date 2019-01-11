@@ -22,12 +22,21 @@ time.sleep(0.5)
 train_time_table = TrainTimeTable("config.json")
 progress_bar = ProgressBar(lcd)
 
+def display_error_message():
+    lcd.clear()
+    lcd.home()
+    lcd.write("Failed to update")
+    lcd.nextline()
+    sleep(9)
+    lcd.write("Retrying")
+    sleep(1)
+
 def update_traintime():
     global last_update
     global text
     if last_update is not None:
         elapsed =  time.time() - last_update
-        if elapsed < 60:
+        if elapsed < UPDATE_INTERVAL:
             return
     last_update = time.time()
     try:
@@ -36,18 +45,11 @@ def update_traintime():
         progress_bar.stop()
     except TrainTableRequestError:
         progress_bar.stop()
-        lcd.clear()
-        lcd.home()
-        lcd.write("Failed to update")
-        lcd.nextline()
-        sleep(9)
-        lcd.write("Retrying")
-        sleep(1)
+        display_error_message()
         update_traintime()
 
-index = 0
-display_line_size = 2
-while True:
+def display_time_table():
+    global text
     update_traintime()
     lines = text.split("\n")
     for i in range(0, len(lines) - 1):
@@ -58,3 +60,7 @@ while True:
             lcd.nextline()
             lcd.write(lines[i + 1])
             time.sleep(UPDATE_INTERVAL / (len(lines) * 2))
+
+if __name__ == '__main__':
+    while True:
+        display_time_table()
