@@ -134,7 +134,7 @@ class LCD:
 
     def write8bits(self, value, char_mode=False):
         global _rs_pin
-        self._gpio.output(_rs_pin, char_mode)
+        GPIO.output(_rs_pin, char_mode)
         for i in range(4,8):
             GPIO.setup(_data_pins[i - 4], GPIO.OUT)
             GPIO.output(_data_pins[i - 4], (value >> i) & 0x01)
