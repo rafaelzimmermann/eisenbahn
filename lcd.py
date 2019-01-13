@@ -11,6 +11,9 @@ _displayfunction = 0
 _displaycontrol = 0
 _row_offsets = [None]*4
 
+LCD_RETURNHOME = 2
+LCD_SETCGRAMADDR = 0x40
+
 class LCD:
     """Based on https://github.com/kurimawxx00/LiquidCrystalPi/blob/master/LiquidCrystalPi.py"""
 
@@ -73,7 +76,7 @@ class LCD:
         time.sleep(0.002)
 
     def home(self):
-        self.command(2)
+        self.command(LCD_RETURNHOME)
         time.sleep(0.002)
 
     def nextline(self):
@@ -102,13 +105,26 @@ class LCD:
         for i in range (0, len(char)):
             self.send(ord(char[i]), 1)
 
+    def create_char(self, location, pattern):
+        """Fill one of the first 8 CGRAM locations with custom characters.
+        The location parameter should be between 0 and 7 and pattern should
+        provide an array of 8 bytes containing the pattern. E.g. you can easyly
+        design your custom character at http://www.quinapalus.com/hd44780udg.html
+        To show your custom character use eg. lcd.message('\x01')
+        """
+        # only position 0..7 are allowed
+        location &= 0x7
+        self.write8bits(LCD_SETCGRAMADDR | (location << 3))
+        for i in range(8):
+            self.write8bits(pattern[i], char_mode=True)
+
     def send(self,value, mode):
         global _rs_pin
         GPIO.output(_rs_pin, mode)
         self.write4bits(value >> 4)
         self.write4bits(value)
 
-    def pulseEnable(self):
+    def pulse_enable(self):
         GPIO.output(_enable_pin, 0)
         time.sleep(0.000001)
         GPIO.output(_enable_pin, 1)
@@ -116,9 +132,19 @@ class LCD:
         GPIO.output(_enable_pin, 0)
         time.sleep(0.0001)
 
+    def write8bits(self, value, char_mode=False):
+        for i in range(4,8):
+            GPIO.setup(_data_pins[i], GPIO.OUT)
+            GPIO.output(_data_pins[i], (value >> i) & 0x01)
+        self.pulse_enable()
+
+        for i in range(0,4):
+            GPIO.setup(_data_pins[i], GPIO.OUT)
+            GPIO.output(_data_pins[i], (value >> i) & 0x01)
+        self.pulse_enable()
+
     def write4bits(self,value):
         for i in range(0,4):
             GPIO.setup(_data_pins[i], GPIO.OUT)
             GPIO.output(_data_pins[i], (value >> i) & 0x01)
-
-        self.pulseEnable()
+        self.pulse_enable()
