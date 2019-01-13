@@ -32,7 +32,7 @@ class TrainTimeTable():
         lines = []
         for item in departures:
             line = []
-            if item["countdown"] < 60:
+            if item["countdown"] < 30:
                 line.append(item["lineNumber"])
                 line.append(item["direction"])
                 line.append(str(item["countdown"]) if item["countdown"] > 0 else "sofort")
