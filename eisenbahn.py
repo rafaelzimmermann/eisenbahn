@@ -59,7 +59,7 @@ def display_time_table():
         if len(lines) > i:
             lcd.nextline()
             lcd.write(lines[i + 1])
-            time.sleep(UPDATE_INTERVAL / (len(lines) * 2))
+            time.sleep(UPDATE_INTERVAL / (len(lines) * 4))
 
 if __name__ == '__main__':
     while True:
