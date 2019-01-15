@@ -29,12 +29,12 @@ class Weather():
 
     def get_formated_forecast(self):
         weather_data = self.get_forecast()
-        unit = u"\N{DEGREE SIGN}C"
+        unit = "{DEGREE_SIGN}C"
         forecast = weather_data["list"][0]
         current_temp = math.ceil(forecast["main"]["temp"])
 
-        text = forecast["weather"][0]["description"].upper()
-        text += " " + str(int(current_temp)) + unit + " "
+        text = forecast["weather"][0]["description"].upper() + "\n"
+        text += str(int(current_temp)) + unit + " "
         return text
 
 

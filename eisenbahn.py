@@ -1,10 +1,13 @@
 import os
 import time
 
+import lcd.special_chars
+
 from multiprocessing import Process, Queue
 from traintime import TrainTimeTable, TrainTableRequestError
 from progressbar import ProgressBar
 from weather.weather import Weather
+
 
 MESSAGE_ERROR_DISPLAY_DURATION = 10
 
@@ -20,9 +23,6 @@ def initiate_lcd():
     time.sleep(0.5)
     return lcd
 
-def create_weather_chars(lcd):
-    lcd.create_char()
-
 
 class Einsenbahn():
 
@@ -31,6 +31,7 @@ class Einsenbahn():
         self.train_time_service = train_time_service
         self.progress_bar = ProgressBar(lcd)
         self.weather = weather_service
+        self.chars_dict = lcd.special_chars.create_chars(self.lcd)
 
     def display_error_message(self):
         self.lcd.clear()
@@ -40,14 +41,20 @@ class Einsenbahn():
         self.lcd.write("Retrying")
         time.sleep(MESSAGE_ERROR_DISPLAY_DURATION)
 
+    def replace_custom_chars(self, text):
+        for key in self.chars_dict:
+            if key in text:
+                text = text.replace(key, self.chars_dict[key])
+        return text
+
     def display_text(self, lines, duration):
         if len(lines) > 0:
             self.lcd.clear()
             self.lcd.home()
-            self.lcd.write(lines.pop(0))
+            self.lcd.write(self.replace_custom_chars(lines.pop(0)))
             if len(lines) > 0:
                 self.lcd.nextline()
-                self.lcd.write(lines[0])
+                self.lcd.write(self.replace_custom_chars(lines[0]))
         time.sleep(duration)
         if len(lines) > 2:
             self.display_text(lines, duration)
@@ -57,7 +64,7 @@ class Einsenbahn():
             self.progress_bar.start()
             text = self.train_time_service.fetch_formated_next_departures()
             self.progress_bar.stop()
-            for i in range(1):
+            for i in range(4):
                 lines = text.split("\n")
                 lines_display_duration = 15 / (len(lines) / 2)
                 self.display_text(lines, duration=lines_display_duration)
