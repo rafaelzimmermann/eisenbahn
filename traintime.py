@@ -13,9 +13,8 @@ class TrainTableRequestError(Exception):
 
 class TrainTimeTable():
 
-    def __init__(self, config_file):
-        with open(config_file) as file:
-            self.query_params = json.loads(file.read())
+    def __init__(self, config):
+        self.query_params = config
 
     def _request_next_departures(self):
         try:
@@ -32,11 +31,10 @@ class TrainTimeTable():
         lines = []
         for item in departures:
             line = []
-            if item["countdown"] < 30:
-                line.append(item["lineNumber"])
-                line.append(item["direction"])
-                line.append(str(item["countdown"]) if item["countdown"] > 0 else "sofort")
-                lines.append(line)
+            line.append(item["lineNumber"])
+            line.append(item["direction"])
+            line.append(str(item["countdown"]) if item["countdown"] > 0 else "sofort")
+            lines.append(line)
         return lines
 
     def fetch_formated_next_departures(self, max_line_size=16):
@@ -60,6 +58,7 @@ class TrainTimeTable():
 if __name__ == '__main__':
     import sys
     config_file = sys.argv[1] if len(sys.argv) == 2 else "config.json"
-    print(config_file)
-    train_time_table = TrainTimeTable(config_file)
-    print(train_time_table.fetch_formated_next_departures(max_line_size=30).encode('utf-8'))
+    with open(config_file) as f:
+        config = json.loads(f.read())
+        train_time_table = TrainTimeTable(config["trainTime"])
+        print(train_time_table.fetch_formated_next_departures(max_line_size=30).encode('utf-8'))
