@@ -4,8 +4,8 @@ import time
 from lcd.special_chars import create_chars
 
 from multiprocessing import Process, Queue
-from traintime import TrainTimeTable, TrainTableRequestError
-from progressbar import ProgressBar
+from traintime.traintime import TrainTimeTable, TrainTableRequestError
+from lcd.progressbar import ProgressBar
 from weather.weather import Weather
 
 
