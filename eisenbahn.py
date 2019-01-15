@@ -12,7 +12,7 @@ from weather.weather import Weather
 MESSAGE_ERROR_DISPLAY_DURATION = 10
 
 def initiate_lcd():
-    from lcd import LCD
+    from lcd.lcd import LCD
     import RPi.GPIO as GPIO
     GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
