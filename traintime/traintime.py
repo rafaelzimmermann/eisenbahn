@@ -19,6 +19,7 @@ class TrainTimeTable():
 
     def __init__(self, config):
         self.query_params = config
+        self.data = None
 
     def _request_next_departures(self):
         try:
@@ -45,12 +46,12 @@ class TrainTimeTable():
         lines = self._get_next_train_list()
         first_col_max_len = 3
         last_col_max_len = 2
-        unit_size = 3
+        unit_size = 1
         text = ""
         index = 0
         for line in lines:
             text += align_text(line[0][:first_col_max_len], first_col_max_len)
-            text += align_text_right(line[2][:last_col_max_len], last_col_max_len) + "min"
+            text += align_text_right(line[2][:last_col_max_len], last_col_max_len) + "m"
             if index % 2 > 0:
                 text += "\n"
             else:
