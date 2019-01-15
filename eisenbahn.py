@@ -1,7 +1,7 @@
 import os
 import time
 
-import lcd.special_chars
+from lcd.special_chars import create_chars
 
 from multiprocessing import Process, Queue
 from traintime import TrainTimeTable, TrainTableRequestError
@@ -31,7 +31,7 @@ class Einsenbahn():
         self.train_time_service = train_time_service
         self.progress_bar = ProgressBar(lcd)
         self.weather = weather_service
-        self.chars_dict = lcd.special_chars.create_chars(self.lcd)
+        self.chars_dict = create_chars(self.lcd)
 
     def display_error_message(self):
         self.lcd.clear()

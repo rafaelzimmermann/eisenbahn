@@ -8,6 +8,10 @@ def align_text(text, max_len):
     text += " " * (max_len - len(text))
     return text
 
+def align_text_right(text, max_len):
+    text = " " * (max_len - len(text)) + text
+    return text
+
 class TrainTableRequestError(Exception):
     pass
 
@@ -33,7 +37,7 @@ class TrainTimeTable():
             line = []
             line.append(item["lineNumber"])
             line.append(item["direction"])
-            line.append(str(item["countdown"]) if item["countdown"] > 0 else "sofort")
+            line.append(str(item["countdown"]))
             lines.append(line)
         return lines
 
@@ -42,16 +46,16 @@ class TrainTimeTable():
         first_col_max_len = 3
         last_col_max_len = 2
         unit_size = 3
-        middle_col_size = max_line_size - (last_col_max_len + first_col_max_len + unit_size + 2)
         text = ""
+        index = 0
         for line in lines:
-            text += align_text(line[0][:first_col_max_len], first_col_max_len) + " "
-            text += align_text(line[1][:middle_col_size], middle_col_size) + " "
-            if line[2] == "sofort":
-                text += line[2]
+            text += align_text(line[0][:first_col_max_len], first_col_max_len)
+            text += align_text_right(line[2][:last_col_max_len], last_col_max_len) + "min"
+            if index % 2 > 0:
+                text += "\n"
             else:
-                text += align_text(line[2][:last_col_max_len], last_col_max_len) + "min"
-            text += "\n"
+                text += "  "
+            index+=1
         return text
 
 

@@ -29,7 +29,7 @@ class Weather():
 
     def get_formated_forecast(self):
         weather_data = self.get_forecast()
-        unit = "{DEGREE_SIGN}C"
+        unit = "{CELSIUS_DEGREE}"
         forecast = weather_data["list"][0]
         current_temp = math.ceil(forecast["main"]["temp"])
 
