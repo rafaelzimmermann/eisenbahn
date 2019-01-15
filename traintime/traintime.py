@@ -50,7 +50,7 @@ class TrainTimeTable():
         text = ""
         index = 0
         for line in lines:
-            text += align_text(line[0][:first_col_max_len], first_col_max_len)
+            text += align_text(line[0][:first_col_max_len], first_col_max_len) + " "
             text += align_text_right(line[2][:last_col_max_len], last_col_max_len) + "m"
             if index % 2 > 0:
                 text += "\n"
