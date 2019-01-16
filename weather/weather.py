@@ -2,16 +2,24 @@
 import json
 import math
 import requests
+import time
 
 from datetime import datetime
+from threading import Thread
+from threading import Lock
 
 
 WEATHER_API_URL = "http://api.openweathermap.org/data/2.5/forecast"
 ONE_DAY_SECONDS = 86400
+UPDATE_INTERVAL = 60 * 60
 
-class Weather():
+lock = Lock()
+weather_data = None
+
+class WeatherFetcher(Thread):
 
     def __init__(self, weather_api_config):
+        Thread.__init__(self)
         self.api_key = weather_api_config["apiKey"]
         self.city_name = weather_api_config["cityName"]
         self.country_code = weather_api_config["countryCode"]
@@ -27,12 +35,35 @@ class Weather():
         response = requests.get(WEATHER_API_URL, params=params)
         return response.json()
 
+    def run(self):
+        global weather_data
+        while True:
+            lock.acquire()
+            try:
+                weather_data = self.get_forecast()
+            except Exception as e:
+                print("Failed to fetch train time table." + str(e))
+            lock.release()
+            time.sleep(UPDATE_INTERVAL)
+
+class Weather():
+
+    def __init__(self, weather_api_config):
+        self.weather_fetcher = WeatherFetcher(weather_api_config)
+        self.weather_fetcher.daemon = True
+        self.weather_fetcher.start()
+
     def get_formated_forecast(self):
-        weather_data = self.get_forecast()
+        global weather_data
+        lock.acquire()
+        if weather_data is None:
+            lock.release()
+            return "No data."
         unit = "{CELSIUS_DEGREE}"
         forecast = weather_data["list"][0]
-        current_temp = math.ceil(forecast["main"]["temp"])
+        lock.release()
 
+        current_temp = math.ceil(forecast["main"]["temp"])
         text = forecast["weather"][0]["description"].upper() + "\n"
         text += str(int(current_temp)) + unit + " "
         return text

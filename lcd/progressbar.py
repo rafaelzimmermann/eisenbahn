@@ -24,7 +24,7 @@ class ProgressBarAnimationThread(Thread):
                 self.lcd.write(loading_text)
                 self.lcd.nextline()
                 self.lcd.write((index * " ") + bar)
-                time.sleep(0.3)
+                time.sleep(1)
                 if self.stop_event.is_set():
                     return
             for index in range(len(bar), self.lcd.cols):
@@ -33,7 +33,7 @@ class ProgressBarAnimationThread(Thread):
                 self.lcd.write(loading_text)
                 self.lcd.nextline()
                 self.lcd.write(((self.lcd.cols - index) * " ") + bar)
-                time.sleep(0.3)
+                time.sleep(1)
                 if self.stop_event.is_set():
                     return
 
@@ -51,6 +51,7 @@ class ProgressBar():
         if self.animation_thread is not None:
             return
         self.animation_thread = ProgressBarAnimationThread(self.lcd)
+        self.animation_thread.daemon = True
         self.animation_thread.start()
 
     def stop(self):

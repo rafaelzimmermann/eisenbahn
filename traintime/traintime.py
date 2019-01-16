@@ -1,8 +1,18 @@
 # -*- coding: utf-8 -*-
 import requests
 import json
+import time
+
+from threading import Thread
+from threading import Lock
 
 RHEINBAHN_URL = 'https://haltestellenmonitor.vrr.de/backend/app.php/api/stations/table'
+REQUEST_TIMEOUT_SECONDS = 5
+UPDATE_INTERVAL = 60
+
+lock = Lock()
+last_train_time_data = None
+last_update = None
 
 def align_text(text, max_len):
     text += " " * (max_len - len(text))
@@ -15,15 +25,15 @@ def align_text_right(text, max_len):
 class TrainTableRequestError(Exception):
     pass
 
-class TrainTimeTable():
+class TrainTimeFetcher(Thread):
 
     def __init__(self, config):
+        Thread.__init__(self)
         self.query_params = config
-        self.data = None
 
     def _request_next_departures(self):
         try:
-            response = requests.post(RHEINBAHN_URL, data=self.query_params)
+            response = requests.post(RHEINBAHN_URL, data=self.query_params, timeout=REQUEST_TIMEOUT_SECONDS)
         except Exception:
             raise TrainTableRequestError()
 
@@ -31,10 +41,35 @@ class TrainTimeTable():
             raise TrainTableRequestError("Request Status Code:" + str(response.status_code))
         return response.json()["departureData"]
 
+    def run(self):
+        global last_train_time_data
+        global last_update
+        while True:
+            lock.acquire()
+            try:
+                last_train_time_data = self._request_next_departures()
+                last_update = time.time()
+            except Exception as e:
+                print("Failed to fetch train time table." + str(e))
+
+            lock.release()
+            time.sleep(UPDATE_INTERVAL)
+
+
+
+class TrainTimeTable():
+
+    def __init__(self, config):
+        self.train_time_fetcher = TrainTimeFetcher(config)
+        self.train_time_fetcher.daemon = True
+        self.train_time_fetcher.start()
+
     def _get_next_train_list(self):
-        departures = self._request_next_departures()
+        global last_train_time_data
         lines = []
-        for item in departures:
+        if last_train_time_data is None:
+            return lines
+        for item in last_train_time_data:
             line = []
             line.append(item["lineNumber"])
             line.append(item["direction"])
@@ -43,7 +78,14 @@ class TrainTimeTable():
         return lines
 
     def fetch_formated_next_departures(self, max_line_size=16):
+        global last_update
+        lock.acquire()
+        if last_update is None:
+            lock.release()
+            return "No data."
         lines = self._get_next_train_list()
+        update_elapsed_time = time.time() - last_update
+        lock.release()
         first_col_max_len = 3
         last_col_max_len = 2
         unit_size = 1
@@ -57,6 +99,8 @@ class TrainTimeTable():
             else:
                 text += "  "
             index+=1
+        if update_elapsed_time > UPDATE_INTERVAL:
+            text = "OUTDATED\n" + text
         return text
 
 
@@ -66,4 +110,6 @@ if __name__ == '__main__':
     with open(config_file) as f:
         config = json.loads(f.read())
         train_time_table = TrainTimeTable(config["trainTime"])
+        print(train_time_table.fetch_formated_next_departures(max_line_size=30).encode('utf-8'))
+        time.sleep(UPDATE_INTERVAL + 10)
         print(train_time_table.fetch_formated_next_departures(max_line_size=30).encode('utf-8'))
