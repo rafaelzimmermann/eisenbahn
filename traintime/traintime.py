@@ -101,6 +101,10 @@ class TrainTimeTable():
             index+=1
         if update_elapsed_time > UPDATE_INTERVAL:
             text = "OUTDATED\n" + text
+
+        if len(text) == 0:
+            text = "No data."
+
         return text
 
 
