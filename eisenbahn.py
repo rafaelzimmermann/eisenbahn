@@ -60,18 +60,18 @@ class Einsenbahn():
             self.display_text(lines, duration)
 
     def display_time_table(self):
-        try:
+        for i in range(4):
             self.progress_bar.start()
-            text = self.train_time_service.fetch_formated_next_departures()
-            self.progress_bar.stop()
-            for i in range(4):
+            try:
+                text = self.train_time_service.fetch_formated_next_departures()
+                self.progress_bar.stop()
                 lines = text.split("\n")
                 lines_display_duration = 15 / (len(lines) / 2)
                 self.display_text(lines, duration=lines_display_duration)
-        except Exception as e:
-            print(e)
-            self.progress_bar.stop()
-            self.display_error_message()
+            except Exception as e:
+                print(e)
+                self.progress_bar.stop()
+                self.display_error_message()
 
     def display_weather(self):
         self.progress_bar.start()
