@@ -4,13 +4,11 @@ import json
 import time
 
 from threading import Thread
-from threading import Lock
 
 RHEINBAHN_URL = 'https://haltestellenmonitor.vrr.de/backend/app.php/api/stations/table'
 REQUEST_TIMEOUT_SECONDS = 5
 UPDATE_INTERVAL = 60
 
-lock = Lock()
 last_train_time_data = None
 last_update = None
 
@@ -53,10 +51,8 @@ class TrainTimeFetcher(Thread):
                 print("Failed to fetch train time table." + str(e))
                 result = "Failed!"
 
-            lock.acquire()
             last_train_time_data = result
             last_update = time.time()
-            lock.release()
 
             time.sleep(UPDATE_INTERVAL)
 
@@ -84,13 +80,10 @@ class TrainTimeTable():
 
     def fetch_formated_next_departures(self, max_line_size=16):
         global last_update
-        lock.acquire()
         lines = self._get_next_train_list()
         if last_update is None or len(lines) == 0:
-            lock.release()
             return "No data."
         update_elapsed_time = time.time() - last_update
-        lock.release()
         first_col_max_len = 3
         last_col_max_len = 2
         unit_size = 1

@@ -6,14 +6,12 @@ import time
 
 from datetime import datetime
 from threading import Thread
-from threading import Lock
 
 
 WEATHER_API_URL = "http://api.openweathermap.org/data/2.5/forecast"
 ONE_DAY_SECONDS = 86400
 UPDATE_INTERVAL = 60 * 60
 
-lock = Lock()
 weather_data = None
 
 class WeatherFetcher(Thread):
@@ -38,12 +36,10 @@ class WeatherFetcher(Thread):
     def run(self):
         global weather_data
         while True:
-            lock.acquire()
             try:
                 weather_data = self.get_forecast()
             except Exception as e:
                 print("Failed to fetch train time table." + str(e))
-            lock.release()
             time.sleep(UPDATE_INTERVAL)
 
 class Weather():
@@ -55,13 +51,10 @@ class Weather():
 
     def get_formated_forecast(self):
         global weather_data
-        lock.acquire()
         if weather_data is None:
-            lock.release()
             return "No data."
         unit = "{CELSIUS_DEGREE}"
         forecast = weather_data["list"][0]
-        lock.release()
 
         current_temp = math.ceil(forecast["main"]["temp"])
         text = forecast["weather"][0]["description"].upper() + "\n"
