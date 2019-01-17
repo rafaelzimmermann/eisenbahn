@@ -45,14 +45,17 @@ class TrainTimeFetcher(Thread):
         global last_train_time_data
         global last_update
         while True:
-            lock.acquire()
+            result = None
             try:
-                last_train_time_data = self._request_next_departures()
-                last_update = time.time()
+                result = self._request_next_departures()
             except Exception as e:
                 print("Failed to fetch train time table." + str(e))
 
+            lock.acquire()
+            last_train_time_data = result
+            last_update = time.time()
             lock.release()
+
             time.sleep(UPDATE_INTERVAL)
 
 
