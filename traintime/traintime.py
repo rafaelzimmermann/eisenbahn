@@ -50,6 +50,7 @@ class TrainTimeFetcher(Thread):
                 result = self._request_next_departures()
             except Exception as e:
                 print("Failed to fetch train time table." + str(e))
+                result = "Failed!"
 
             lock.acquire()
             last_train_time_data = result
