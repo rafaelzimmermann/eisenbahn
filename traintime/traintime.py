@@ -14,6 +14,7 @@ lock = Lock()
 last_train_time_data = None
 last_update = None
 
+
 def align_text(text, max_len):
     text += " " * (max_len - len(text))
     return text
@@ -84,10 +85,10 @@ class TrainTimeTable():
     def fetch_formated_next_departures(self, max_line_size=16):
         global last_update
         lock.acquire()
-        if last_update is None:
+        lines = self._get_next_train_list()
+        if last_update is None or len(lines) == 0:
             lock.release()
             return "No data."
-        lines = self._get_next_train_list()
         update_elapsed_time = time.time() - last_update
         lock.release()
         first_col_max_len = 3

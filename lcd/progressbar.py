@@ -55,6 +55,8 @@ class ProgressBar():
         self.animation_thread.start()
 
     def stop(self):
+        if self.animation_thread is None:
+            return
         self.animation_thread.stop()
         self.animation_thread.join()
         self.animation_thread = None
